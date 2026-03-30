@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>מכונת מלחמה - מחולל שמות למבצעים</title>
+    <style>
+        :root {
+            --army-green: #3d4a35;
+            --dark-olive: #1b2116;
+            --steel: #94a3b8;
+            --alert: #dc2626;
+            --gold: #fbbf24;
+            --terminal: #4ade80;
+            --crt-glow: rgba(74, 222, 128, 0.15);
+            --bg-green-dark: #0a1a0a;
+            --bg-green-light: #1b2e1b;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: #2a3320;
+            color: #f1f5f9;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            height: 100dvh;
+            margin: 0;
+            padding: 12px;
+            overflow: hidden;
+            -webkit-text-size-adjust: 100%;
+            position: relative;
+        }
+
+        .bg-layer-camo {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse 320px 240px at 5% 8%, #1a2610 0%, transparent 70%),
+                radial-gradient(ellipse 280px 350px at 92% 85%, #0f1a08 0%, transparent 65%),
+                radial-gradient(ellipse 400px 180px at 50% 2%, #3e4f2c 0%, transparent 60%),
+                radial-gradient(ellipse 260px 300px at 18% 72%, #344428 0%, transparent 65%),
+                radial-gradient(ellipse 350px 260px at 78% 20%, #151f0e 0%, transparent 60%),
+                radial-gradient(ellipse 300px 220px at 42% 50%, #3a4d2a 0%, transparent 55%),
+                radial-gradient(ellipse 230px 290px at 68% 92%, #0d1608 0%, transparent 65%),
+                radial-gradient(ellipse 270px 150px at 8% 42%, #2e3e1f 0%, transparent 60%),
+                radial-gradient(ellipse 240px 260px at 88% 48%, #1f2d14 0%, transparent 55%),
+                radial-gradient(ellipse 310px 320px at 52% 38%, #121c0a 0%, transparent 60%),
+                radial-gradient(ellipse 180px 400px at 35% 15%, #455832 0%, transparent 55%),
+                radial-gradient(ellipse 350px 200px at 60% 70%, #283818 0%, transparent 60%),
+                radial-gradient(ellipse 200px 280px at 15% 95%, #3b4e28 0%, transparent 65%),
+                radial-gradient(ellipse 290px 190px at 82% 5%, #222f15 0%, transparent 55%),
+                radial-gradient(ellipse 160px 350px at 45% 80%, #4a5e36 0%, transparent 60%);
+        }
+
+        .bg-layer-stains {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            background:
+                radial-gradient(ellipse 180px 120px at 12% 20%, rgba(50, 35, 15, 0.6) 0%, transparent 80%),
+                radial-gradient(ellipse 100px 150px at 80% 65%, rgba(40, 28, 10, 0.5) 0%, transparent 75%),
+                radial-gradient(ellipse 200px 80px at 55% 90%, rgba(55, 38, 18, 0.55) 0%, transparent 80%),
+                radial-gradient(ellipse 90px 130px at 30% 55%, rgba(35, 25, 8, 0.4) 0%, transparent 75%),
+                radial-gradient(ellipse 150px 100px at 70% 15%, rgba(60, 42, 20, 0.45) 0%, transparent 80%),
+                radial-gradient(ellipse 120px 160px at 90% 35%, rgba(45, 30, 12, 0.35) 0%, transparent 70%),
+                radial-gradient(ellipse 170px 90px at 5% 80%, rgba(30, 22, 8, 0.5) 0%, transparent 75%);
+            pointer-events: none;
+        }
+
+        .bg-layer-texture {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            background:
+                url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23f)' opacity='0.18'/%3E%3C/svg%3E");
+            background-size: 200px 200px;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+
+        .bg-layer-weave {
+            position: fixed;
+            inset: 0;
+            z-index: 3;
+            background:
+                url("data:image/svg+xml,%3Csvg width='8' height='8' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='8' height='8' fill='transparent'/%3E%3Cline x1='0' y1='0' x2='8' y2='0' stroke='%23000' stroke-width='0.4' opacity='0.12'/%3E%3Cline x1='0' y1='4' x2='8' y2='4' stroke='%23000' stroke-width='0.3' opacity='0.08'/%3E%3Cline x1='0' y1='0' x2='0' y2='8' stroke='%23000' stroke-width='0.4' opacity='0.1'/%3E%3Cline x1='4' y1='0' x2='4' y2='8' stroke='%23000' stroke-width='0.3' opacity='0.06'/%3E%3C/svg%3E");
+            background-size: 8px 8px;
+            pointer-events: none;
+        }
+
+        .bg-layer-vignette {
+            position: fixed;
+            inset: 0;
+            z-index: 4;
+            background: radial-gradient(ellipse 70% 60% at center, transparent 30%, rgba(0,0,0,0.5) 100%);
+            pointer-events: none;
+        }
+
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background:
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.08) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            z-index: 1002;
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .device-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 520px;
+            perspective: 900px;
+        }
+
+        .tactical-console {
+            background: linear-gradient(170deg, #4a5640 0%, #3d4a35 30%, #333f2c 70%, #2a3422 100%);
+            padding: clamp(16px, 3.5vw, 28px);
+            border-radius: 14px;
+            border: 3px solid #556248;
+            width: 100%;
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(8px, 2vh, 15px);
+            position: relative;
+            overflow: hidden;
+            transform: rotateX(1.5deg);
+            transform-style: preserve-3d;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.12),
+                inset 0 -1px 0 rgba(0,0,0,0.3),
+                0 2px 0 #2a3422,
+                0 4px 0 #232b1b,
+                0 6px 0 #1b2116,
+                0 8px 0 #151c10,
+                0 10px 0 #10150c,
+                0 12px 20px rgba(0,0,0,0.6),
+                0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .tactical-console::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 11px;
+            background:
+                url("data:image/svg+xml,%3Csvg width='6' height='6' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='6' height='6' fill='%23000' fill-opacity='0.03'/%3E%3Crect width='3' height='3' fill='%23fff' fill-opacity='0.02'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .screw {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 35%, #8a8a7a, #555548 60%, #3a3a30);
+            box-shadow:
+                inset 0 1px 2px rgba(255,255,255,0.3),
+                inset 0 -1px 2px rgba(0,0,0,0.4),
+                0 1px 3px rgba(0,0,0,0.5);
+            z-index: 20;
+        }
+        .screw::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 25%;
+            right: 25%;
+            height: 1.5px;
+            background: #2a2a22;
+            border-radius: 1px;
+            transform: translateY(-50%) rotate(-30deg);
+            box-shadow: 0 0.5px 0 rgba(255,255,255,0.15);
+        }
+        .screw-tl { top: 8px; left: 8px; }
+        .screw-tr { top: 8px; right: 8px; }
+        .screw-bl { bottom: 8px; left: 8px; }
+        .screw-br { bottom: 8px; right: 8px; }
+        .screw-br::after { transform: translateY(-50%) rotate(45deg); }
+        .screw-tl::after { transform: translateY(-50%) rotate(60deg); }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 8px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 5;
+        }
+
+        .console-title {
+            margin: 0;
+            font-size: clamp(0.95rem, 4.5vw, 1.25rem);
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .classification-badge {
+            font-size: 0.6rem;
+            color: var(--terminal);
+            border: 1px solid var(--terminal);
+            padding: 2px 6px;
+            border-radius: 3px;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            text-shadow: 0 0 6px rgba(74, 222, 128, 0.4);
+            animation: badge-pulse 3s ease-in-out infinite;
+        }
+        @keyframes badge-pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .screen-frame {
+            background: #1a1a14;
+            border-radius: 8px;
+            padding: 4px;
+            position: relative;
+            z-index: 5;
+            box-shadow:
+                inset 0 2px 6px rgba(0,0,0,0.8),
+                inset 0 0 0 1px rgba(0,0,0,0.5),
+                0 1px 0 rgba(255,255,255,0.06);
+            flex-shrink: 1;
+        }
+
+        .screen-inner {
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .screen-inner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 5px;
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.06) 0%, transparent 50%, rgba(74, 222, 128, 0.03) 100%);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .reels-bay {
+            display: flex;
+            gap: 4px;
+            padding: clamp(4px, 1.5vw, 8px);
+            background: linear-gradient(180deg, #030d03, #0a1a0a 20%, #071407 80%, #030d03);
+            border: none;
+            border-radius: 5px;
+            overflow: hidden;
+            height: clamp(100px, 22vh, 180px);
+            min-height: 90px;
+            position: relative;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.9);
+            flex-shrink: 1;
+        }
+
+        .reels-bay::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(74, 222, 128, 0.1), transparent);
+            z-index: 10;
+        }
+
+        .reel-unit {
+            flex: 1;
+            background: #0a1f0a;
+            border-radius: 3px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .reel-unit::before,
+        .reel-unit::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0;
+            height: 30%;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .reel-unit::before {
+            top: 0;
+            background: linear-gradient(to bottom, rgba(3, 13, 3, 0.85), transparent);
+        }
+        .reel-unit::after {
+            bottom: 0;
+            background: linear-gradient(to top, rgba(3, 13, 3, 0.85), transparent);
+        }
+
+        .reel-strip {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+            will-change: transform;
+        }
+
+        .sym-block {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: #f1f5f9;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            text-align: center;
+            padding: 0 2px;
+        }
+
+        .sym-text {
+            font-size: clamp(0.75rem, 3.2vw, 1.6rem);
+            line-height: 1.1;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .sym-name {
+            font-size: clamp(0.45rem, 1.6vw, 0.7rem);
+            color: var(--terminal);
+            margin-top: 3px;
+            opacity: 0.8;
+        }
+
+        .action-panel {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(8px, 1.5vh, 12px);
+            flex-shrink: 0;
+        }
+
+        .led-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            z-index: 5;
+            flex-shrink: 0;
+        }
+        .led {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #5eff5e, #1a8a1a);
+            box-shadow: 0 0 6px rgba(74, 222, 128, 0.6), inset 0 -1px 2px rgba(0,0,0,0.3);
+            animation: led-blink 2s ease-in-out infinite;
+        }
+        .led-red {
+            background: radial-gradient(circle at 35% 35%, #ff5e5e, #8a1a1a);
+            box-shadow: 0 0 6px rgba(220, 38, 38, 0.6), inset 0 -1px 2px rgba(0,0,0,0.3);
+            animation: none;
+        }
+        .led-label {
+            font-size: 0.55rem;
+            color: var(--steel);
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        @keyframes led-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .data-readout {
+            background: linear-gradient(180deg, #040e04, #071407);
+            padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 12px);
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: clamp(0.65rem, 2.8vw, 0.85rem);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--terminal);
+            border: 1px solid rgba(74, 222, 128, 0.15);
+            gap: 8px;
+            flex-wrap: wrap;
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.6);
+            text-shadow: 0 0 8px rgba(74, 222, 128, 0.4);
+            position: relative;
+            z-index: 5;
+        }
+
+        .btn-strike {
+            background: linear-gradient(180deg, #606e50 0%, #4d5940 30%, #3a4530 70%, #2d3624 100%);
+            color: white;
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.15);
+            padding: clamp(10px, 2.5vh, 16px);
+            font-size: clamp(1.1rem, 5vw, 1.6rem);
+            font-weight: 900;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.1s;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            position: relative;
+            z-index: 5;
+            text-shadow: 0 2px 3px rgba(0,0,0,0.5);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.1),
+                0 2px 0 #2a3422,
+                0 4px 0 #1f2819,
+                0 6px 10px rgba(0,0,0,0.4);
+        }
+
+        .btn-strike:active {
+            transform: translateY(4px);
+            box-shadow:
+                inset 0 1px 3px rgba(0,0,0,0.3),
+                0 1px 0 #2a3422;
+        }
+
+        .btn-strike:disabled {
+            opacity: 0.6;
+        }
+
+        .status-msg {
+            text-align: center;
+            min-height: 2.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: var(--terminal);
+            font-size: clamp(0.8rem, 3.2vw, 1rem);
+            line-height: 1.3;
+            flex-shrink: 0;
+            padding: 0 4px;
+            position: relative;
+            z-index: 5;
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+        }
+
+        @media (max-width: 380px) {
+            .tactical-console {
+                padding: 10px;
+                gap: 6px;
+                border-width: 2px;
+            }
+            .screw { width: 10px; height: 10px; }
+            .console-header { padding-bottom: 6px; }
+            .data-readout {
+                flex-direction: column;
+                align-items: center;
+                gap: 2px;
+                padding: 6px 8px;
+            }
+            .led-indicator { gap: 4px; }
+        }
+
+        @media (max-height: 600px) {
+            .reels-bay {
+                height: clamp(80px, 18vh, 120px);
+                min-height: 70px;
+            }
+            .status-msg { min-height: 2em; }
+            .tactical-console { gap: 5px; }
+        }
+
+        @media (max-height: 500px) {
+            .reels-bay {
+                height: 70px;
+                min-height: 60px;
+            }
+            .btn-strike { padding: 8px; }
+            .status-msg { min-height: 1.5em; font-size: 0.75rem; }
+            .led-indicator { display: none; }
+        }
+
+        @media (orientation: landscape) and (max-height: 500px) {
+            .device-wrapper {
+                max-width: 700px;
+            }
+            .tactical-console {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 8px;
+                transform: none;
+            }
+            .console-header {
+                width: 100%;
+                padding-bottom: 4px;
+            }
+            .screen-frame {
+                flex: 1 1 55%;
+            }
+            .reels-bay {
+                height: auto;
+                min-height: 100px;
+                max-height: 45vh;
+            }
+            .action-panel,
+            .status-msg {
+                flex: 1 1 40%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer-camo"></div>
+    <div class="bg-layer-stains"></div>
+    <div class="bg-layer-texture"></div>
+    <div class="bg-layer-weave"></div>
+    <div class="bg-layer-vignette"></div>
+
+    <div class="device-wrapper">
+        <div class="tactical-console" id="machine">
+            <div class="screw screw-tl"></div>
+            <div class="screw screw-tr"></div>
+            <div class="screw screw-bl"></div>
+            <div class="screw screw-br"></div>
+
+            <div class="console-header">
+                <h1 class="console-title">מחולל שמות למבצעים</h1>
+                <div class="classification-badge">סודי ביותר</div>
+            </div>
+            
+            <div class="screen-frame">
+                <div class="screen-inner">
+                    <div class="reels-bay" id="reels-bay">
+                        <div class="reel-unit"><div class="reel-strip" id="strip-0"></div></div>
+                        <div class="reel-unit"><div class="reel-strip" id="strip-1"></div></div>
+                        <div class="reel-unit"><div class="reel-strip" id="strip-2"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-msg" id="status">ממתין לפקודה...</div>
+
+            <div class="action-panel">
+                <div class="data-readout">
+                    <span id="scare-meter">מדד פחד: <b>--%</b></span>
+                    <span id="coord">נ"צ: 32 / 34</span>
+                </div>
+                <div class="led-indicator">
+                    <div class="led"></div>
+                    <span class="led-label">SYS READY</span>
+                    <div class="led led-red" style="margin-right: auto;"></div>
+                    <span class="led-label">ARMED</span>
+                </div>
+                <button class="btn-strike" id="spin-btn" onclick="play()">צור שם</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LISTS = [
+            ['מלחמת', 'קרב', 'מתקפת', 'מאבק', 'מבצע', 'מכת', 'פעולת', 'פלישת', 'מצור', 'מארב', 'הפצצת', 'הסתערות', 'כיבוש', 'עמידת', 'גיחת', 'פריצת', 'תמרון'],
+            ['אריה', 'דוב', 'נמר', 'זאב', 'צבוע', 'תנין', 'כריש', 'עטלף', 'קרנף', 'פיל', 'עכביש', 'עקרב', 'דיונון', 'נחש', 'פנתר', 'בבון', 'ברדלס'],
+            ['הגועש', 'השוצף', 'הרושף', 'הזועם', 'הנאבק', 'הנועז', 'האיתן', 'הנחרץ', 'המתגושש', 'הדורך', 'ההולם', 'המפלח', 'החוצב', 'המבקיע', 'המפלס', 'הדוהר', 'המכניע', 'המוחץ', 'הקנאי', 'הסוער', 'הזועף', 'המגן', 'הנחוש', 'האמיץ', 'המסתער', 'הנוקם', 'הכובש', 'הפורץ', 'הבועט', 'התוקף', 'המתמרד', 'המכה', 'המשתולל', 'המעז']
+        ];
+
+        const REELS_DATA = LISTS.map((list, idx) => 
+            list.map(w => ({ 
+                word: w, 
+                scare: Math.floor(Math.random() * (idx === 2 ? 30 : 20)) + (idx === 0 ? 5 : 10) 
+            }))
+        );
+
+        let isSpinning = false;
+        const strips = [document.getElementById('strip-0'), document.getElementById('strip-1'), document.getElementById('strip-2')];
+
+        function getReelHeight() {
+            return document.getElementById('reels-bay').offsetHeight;
+        }
+
+        function populate(strip, index) {
+            strip.innerHTML = '';
+            const data = REELS_DATA[index];
+            const h = getReelHeight();
+            
+            for (let i = 0; i < 40; i++) {
+                const s = data[Math.floor(Math.random() * data.length)];
+                const div = document.createElement('div');
+                div.className = 'sym-block';
+                div.style.height = h + 'px';
+                div.innerHTML = `<span class="sym-text">${s.word}</span><span class="sym-name">פחד: ${s.scare}%</span>`;
+                strip.appendChild(div);
+            }
+        }
+
+        window.play = async function play() {
+            if (isSpinning) return;
+            isSpinning = true;
+            document.getElementById('spin-btn').disabled = true;
+            
+            setStatus("מחשב נתונים...", "white");
+            document.getElementById('scare-meter').innerHTML = 'מדד פחד: <b>--%</b>';
+            document.getElementById('coord').textContent = 'נ"צ: ' + Math.floor(Math.random() * 99) + ' / ' + Math.floor(Math.random() * 99);
+
+            const tasks = strips.map((strip, i) => spin(strip, i));
+            const results = await Promise.all(tasks);
+            
+            isSpinning = false;
+            document.getElementById('spin-btn').disabled = false;
+
+            const opName = results.map(r => r.word).join(' ');
+            const totalScare = Math.min(100, results.reduce((a, b) => a + b.scare, 0));
+            
+            document.getElementById('scare-meter').innerHTML = `מדד פחד: <b style="color:var(--terminal)">${totalScare}%</b>`;
+            setStatus(`השם שנבחר:<br>"${opName}"`, 'var(--gold)');
+        };
+
+        function spin(strip, index) {
+            return new Promise(resolve => {
+                const h = getReelHeight();
+                const duration = 1.2 + (index * 0.4);
+                const data = REELS_DATA[index];
+                const picked = data[Math.floor(Math.random() * data.length)];
+                
+                const targetIdx = strip.children.length - 2;
+                strip.children[targetIdx].innerHTML = `<span class="sym-text">${picked.word}</span><span class="sym-name">פחד: ${picked.scare}%</span>`;
+
+                strip.style.transition = `transform ${duration}s cubic-bezier(0.15, 0, 0.15, 1)`;
+                strip.style.transform = `translateY(-${targetIdx * h}px)`;
+
+                setTimeout(() => {
+                    strip.style.transition = 'none';
+                    strip.style.transform = 'translateY(0px)';
+                    strip.children[0].innerHTML = `<span class="sym-text">${picked.word}</span><span class="sym-name">פחד: ${picked.scare}%</span>`;
+                    resolve(picked);
+                }, duration * 1000);
+            });
+        }
+
+        function setStatus(txt, clr) {
+            const el = document.getElementById('status');
+            el.innerHTML = txt;
+            el.style.color = clr;
+        }
+
+        let resizeTimer;
+        function debouncedInit() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (!isSpinning) init();
+            }, 150);
+        }
+
+        window.onload = () => {
+            init();
+            window.addEventListener('resize', debouncedInit);
+            window.addEventListener('orientationchange', () => {
+                setTimeout(() => { if (!isSpinning) init(); }, 300);
+            });
+        };
+
+        function init() {
+            strips.forEach((strip, i) => populate(strip, i));
+            strips.forEach(s => {
+                s.style.transition = 'none';
+                s.style.transform = 'translateY(0px)';
+            });
+        }
+    </script>
+</body>
+</html>
