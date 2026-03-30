@@ -20,6 +20,7 @@
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            font-family: 'Courier New', Courier, monospace;
         }
 
         html {
@@ -30,7 +31,7 @@
         body {
             background: #2a3320;
             color: #f1f5f9;
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Courier New', Courier, monospace;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -212,8 +213,8 @@
 
         .console-title {
             margin: 0;
-            font-size: clamp(1.1rem, 5vw, 1.35rem);
-            font-weight: 900;
+            font-size: clamp(0.8rem, 3.5vw, 1rem);
+            font-weight: 700;
             color: #fff;
             text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
@@ -452,10 +453,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Courier New', monospace;
             font-weight: bold;
             color: var(--terminal);
-            font-size: clamp(0.95rem, 4vw, 1.15rem);
+            font-size: clamp(0.8rem, 3.5vw, 1rem);
             line-height: 1.3;
             flex-shrink: 0;
             padding: 0 4px;
@@ -626,7 +626,7 @@
             const totalScare = Math.min(100, results.reduce((a, b) => a + b.scare, 0));
             
             document.getElementById('scare-meter').innerHTML = `מדד פחד: <b style="color:var(--terminal)">${totalScare}%</b>`;
-            setStatus(`השם שנבחר:<br>"${opName}"`, 'var(--gold)');
+            setStatus(`השם שנבחר: "${opName}"`, 'var(--gold)');
         };
 
         function spin(strip, index) {
