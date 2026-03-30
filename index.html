@@ -588,6 +588,63 @@
             }))
         );
 
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+        function getAudio() {
+            if (!audioCtx) audioCtx = new AudioCtx();
+            return audioCtx;
+        }
+
+        function playTone(freq, duration, type, vol, delay) {
+            const ctx = getAudio();
+            const t = ctx.currentTime + (delay || 0);
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = type || 'square';
+            osc.frequency.setValueAtTime(freq, t);
+            gain.gain.setValueAtTime(vol || 0.08, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t);
+            osc.stop(t + duration);
+        }
+
+        function sfxPress() {
+            playTone(220, 0.06, 'square', 0.1);
+            playTone(330, 0.04, 'square', 0.06, 0.03);
+        }
+
+        function sfxSpin() {
+            const ctx = getAudio();
+            const duration = 1.8;
+            const bufSize = ctx.sampleRate * duration;
+            const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufSize; i++) {
+                const t = i / ctx.sampleRate;
+                const clickRate = 25 - (t / duration) * 18;
+                data[i] = (Math.sin(t * clickRate * Math.PI * 2) > 0.7 ? 0.08 : 0) * (1 - t / duration);
+            }
+            const src = ctx.createBufferSource();
+            src.buffer = buf;
+            src.connect(ctx.destination);
+            src.start();
+        }
+
+        function sfxStop(index) {
+            const base = 400 + index * 80;
+            playTone(base, 0.08, 'square', 0.12);
+            playTone(base * 0.5, 0.12, 'triangle', 0.08, 0.04);
+        }
+
+        function sfxReveal() {
+            [523, 659, 784, 1047].forEach((f, i) => {
+                playTone(f, 0.18, 'square', 0.07, i * 0.08);
+                playTone(f * 0.5, 0.22, 'triangle', 0.04, i * 0.08);
+            });
+        }
+
         let isSpinning = false;
         const strips = [document.getElementById('strip-0'), document.getElementById('strip-1'), document.getElementById('strip-2')];
 
@@ -615,10 +672,12 @@
             isSpinning = true;
             document.getElementById('spin-btn').disabled = true;
             
+            sfxPress();
             setStatus("מחשב נתונים...", "white");
             document.getElementById('scare-meter').innerHTML = 'מדד פחד: <b>--%</b>';
             document.getElementById('coord').textContent = 'נ"צ: ' + Math.floor(Math.random() * 99) + ' / ' + Math.floor(Math.random() * 99);
 
+            sfxSpin();
             const tasks = strips.map((strip, i) => spin(strip, i));
             const results = await Promise.all(tasks);
             
@@ -628,6 +687,7 @@
             const opName = results.map(r => r.word).join(' ');
             const totalScare = Math.min(100, results.reduce((a, b) => a + b.scare, 0));
             
+            sfxReveal();
             document.getElementById('scare-meter').innerHTML = `מדד פחד: <b style="color:var(--terminal)">${totalScare}%</b>`;
             setStatus(`השם שנבחר: "${opName}"`, 'var(--gold)');
         };
@@ -646,6 +706,7 @@
                 strip.style.transform = `translateY(-${targetIdx * h}px)`;
 
                 setTimeout(() => {
+                    sfxStop(index);
                     strip.style.transition = 'none';
                     strip.style.transform = 'translateY(0px)';
                     strip.children[0].innerHTML = `<span class="sym-text">${picked.word}</span><span class="sym-name">פחד: ${picked.scare}%</span>`;
